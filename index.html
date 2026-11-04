@@ -1,0 +1,341 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>GIS Portfolio – Your Name</title>
+<meta name="description" content="Maps and spatial analysis projects from my GIS course.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Oswald:wght@500;600&family=Public+Sans:wght@400;600&display=swap" rel="stylesheet">
+<style>
+:root{
+  --paper:#eef2f1; --surface:#f8faf9; --ink:#12262b; --muted:#4d6368; --line:#c5d2d1; --water:#1f6f8b;
+  --deep:#0a1a20; --on-deep:#e8f0ef; --on-deep-muted:#a7bcbf; --on-deep-line:rgba(255,255,255,.18);
+  --head:"Oswald","Arial Narrow",Arial,sans-serif;   /* headings: change this one line to change the heading font */
+  --body:"Public Sans",system-ui,sans-serif;
+  --topo:repeating-radial-gradient(circle at 28% 38%,transparent 0 26px,rgba(255,255,255,.07) 26px 27px),
+         repeating-radial-gradient(circle at 74% 66%,transparent 0 34px,rgba(255,255,255,.06) 34px 35px);
+  --map-max-height:85vh;                             /* tallest a map may be; lower it to make maps smaller */
+}
+@media (prefers-color-scheme:dark){
+  :root{--paper:#0f1c20; --surface:#16272c; --ink:#e6eeed; --muted:#9db3b6; --line:#2c4247; --water:#6cc0dc; --deep:#050d10;}
+}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+@media (prefers-reduced-motion:reduce){html{scroll-behavior:auto}}
+body{margin:0;background:var(--deep);color:var(--ink);font:400 1.0625rem/1.65 var(--body)}
+a{color:var(--water);text-underline-offset:3px}
+a:focus-visible{outline:3px solid var(--water);outline-offset:3px}
+.wrap{max-width:1120px;margin:0 auto;padding:0 1.5rem}
+h1,h2,h3{font-family:var(--head);font-weight:600;text-transform:uppercase;margin:0}
+h2{font-size:clamp(2.2rem,5.5vw,3.5rem);line-height:1.1;letter-spacing:.04em}
+h3{font-size:1.05rem;font-weight:500;letter-spacing:.14em;padding-bottom:.6rem;margin-bottom:1.25rem;border-bottom:1px solid var(--line)}
+h4{font:600 1.05rem var(--body);margin:1.5rem 0 .25rem}
+h4:first-of-type{margin-top:0}
+p{margin:0 0 1rem;max-width:62ch}
+ul,ol{margin:0;padding-left:1.25rem}
+li{margin:.3rem 0}
+[id]{scroll-margin-top:3.5rem}
+
+/* Hero map: stays fixed while the content slides over it */
+.hero{position:sticky;top:0;height:100vh;height:100svh;overflow:hidden;display:grid;place-items:center;text-align:center;color:#fff;
+  background:var(--topo),linear-gradient(160deg,#0e3a4a,#0a1a20 70%)}
+.hero img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
+.hero::after{content:"";position:absolute;inset:0;background:rgb(5 13 16 / calc(.3 + var(--dim,0)*.55))}
+.hero-text,.cue,.credit{position:relative;z-index:2}
+.hero h1{font-size:clamp(2.8rem,10vw,8rem);line-height:1;letter-spacing:.05em;text-shadow:0 2px 24px rgba(0,0,0,.45)}
+.hero-text p{margin:1.25rem auto 0;font-size:clamp(1.05rem,2.2vw,1.4rem);letter-spacing:.04em;text-shadow:0 1px 12px rgba(0,0,0,.6)}
+.cue{position:absolute;bottom:1.5rem;left:50%;transform:translateX(-50%);font-size:.9rem;text-align:center}
+.cue::after{content:"";display:block;width:1px;height:2.5rem;margin:.5rem auto 0;background:#fff}
+.credit{position:absolute;right:1.5rem;bottom:1.5rem;font-size:.85rem;opacity:.8;margin:0}
+
+main{position:relative;z-index:1;background:var(--paper)}
+nav.index{position:sticky;top:0;z-index:5;background:var(--paper);border-bottom:1px solid var(--line)}
+nav.index ul{list-style:none;margin:0 auto;padding:1rem 1.5rem;display:flex;flex-wrap:wrap;gap:.4rem 2rem;max-width:1120px}
+nav.index a{font:500 .85rem var(--head);text-transform:uppercase;letter-spacing:.12em;color:var(--ink);text-decoration:none;border-bottom:2px solid transparent}
+nav.index a:hover{border-bottom-color:var(--water)}
+section.block{padding:5rem 0}
+
+/* About */
+.about{display:grid;grid-template-columns:minmax(0,1.5fr) minmax(240px,1fr);gap:4rem}
+.about h2{margin-bottom:1.5rem}
+dl.facts{margin:0;padding:1.5rem;border:1px solid var(--line);background:var(--surface);align-self:start;font-size:.95rem}
+dl.facts dt{font-weight:600;margin-top:1rem}
+dl.facts dt:first-child{margin-top:0}
+dl.facts dd{margin:.1rem 0 0;color:var(--muted)}
+
+/* Thinking Spatially */
+.band{position:relative;min-height:70vh;display:grid;align-items:center;overflow:hidden;color:#fff;
+  background:var(--topo),linear-gradient(200deg,#16515f,#0a1a20 75%)}
+.band img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
+.band::after{content:"";position:absolute;inset:0;background:rgba(5,13,16,.6)}
+.band .wrap{position:relative;z-index:2;padding-block:5rem}
+.band h2{margin-bottom:1.5rem}
+blockquote{margin:0;max-width:30em;font:400 clamp(1.3rem,2.8vw,2rem)/1.45 var(--body)}
+cite{display:block;margin-top:1rem;font-style:normal;font-size:.95rem;opacity:.85}
+.tablewrap{overflow-x:auto;margin-top:2rem;border:1px solid var(--line);background:var(--surface)}
+table{border-collapse:collapse;width:100%;min-width:620px;font-size:1rem}
+th,td{padding:1rem 1.25rem;text-align:left;vertical-align:top;border-bottom:1px solid var(--line)}
+thead th{font:500 .85rem var(--head);text-transform:uppercase;letter-spacing:.12em}
+tbody th{width:20%;font-weight:600}
+tbody tr:last-child>*{border-bottom:0}
+
+/* Projects: each one opens with a dark block (title, objective, maps), then a light block (method, challenges, reflection) */
+.opener{background:var(--deep);color:var(--on-deep);border-top:4px solid var(--water);padding:5rem 0 4.5rem}
+.opener h2{color:#fff;margin-bottom:2rem}
+.opener h3{border-color:var(--on-deep-line)}
+.opener p{color:var(--on-deep)}
+.lede{font-size:1.25rem;line-height:1.6;max-width:60ch}
+.stage{margin-top:4rem}
+.stage .inner{max-width:1360px;margin:0 auto;padding:0 1.5rem}
+
+/* Map frames: the frame hugs each image, so wide, tall and square maps all fit */
+.stage figure{margin:0 0 2.5rem;text-align:center}
+.stage figure img{display:inline-block;max-width:100%;max-height:var(--map-max-height);width:auto;height:auto;border:1px solid var(--on-deep-line);background:#fff}
+.stage figcaption{padding-top:.75rem;font-size:.95rem;color:var(--on-deep-muted)}
+.stage figcaption a{color:#8fd3ea}
+.stage figure.missing{position:relative;display:flex;flex-direction:column;justify-content:flex-end;max-width:900px;min-height:320px;margin-inline:auto;border:1px solid var(--on-deep-line);background:
+  linear-gradient(rgba(255,255,255,.06) 1px,transparent 1px) 0 0/40px 40px,
+  linear-gradient(90deg,rgba(255,255,255,.06) 1px,transparent 1px) 0 0/40px 40px}
+.stage figure.missing::after{content:attr(data-ph);position:absolute;inset:0;display:grid;place-items:center;padding:1rem;color:var(--on-deep-muted)}
+.stage figure.missing figcaption{position:relative;z-index:1;padding:.75rem 1rem}
+.pair{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:2rem;align-items:start}
+
+.cols{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:3.5rem}
+.dm{padding:4rem 0 3rem}
+.cr{padding:1rem 0 5rem}
+
+footer{background:var(--paper);border-top:1px solid var(--line);padding:2rem 0 3rem;color:var(--muted);font-size:.95rem}
+
+@media (max-width:760px){
+  .about,.cols,.pair{grid-template-columns:1fr;gap:2.5rem}
+  section.block{padding:3.5rem 0}
+  .opener{padding:3.5rem 0}
+  .credit{display:none}
+}
+</style>
+</head>
+<body>
+
+<!-- HERO: replace images/hero-map.jpg with your strongest map. Without it, a contour-line backdrop shows. -->
+<header class="hero">
+  <img src="images/hero-map.jpg" alt="Your hero map: describe it briefly." onerror="this.remove()">
+  <div class="hero-text">
+    <h1>Your portfolio title</h1>
+    <p>GIS portfolio by Your Name</p>
+  </div>
+  <div class="cue">Scroll</div>
+  <p class="credit">Map: [title of the hero map]</p>
+</header>
+
+<main>
+  <nav class="index" aria-label="Sections">
+    <ul>
+      <li><a href="#about">About</a></li>
+      <li><a href="#thinking-spatially">Thinking spatially</a></li>
+      <li><a href="#project-1">Project 1</a></li>
+      <li><a href="#project-2">Project 2</a></li>
+      <li><a href="#project-3">Project 3</a></li>
+    </ul>
+  </nav>
+
+  <!-- 1. ABOUT -->
+  <section class="block wrap" id="about">
+    <div class="about">
+      <div>
+        <h2>About</h2>
+        <p>[Who you are: your program, your background, and what brought you to GIS.]</p>
+        <p>[The class: what the course covered and what it asked of you.]</p>
+        <p>[The work: what this portfolio contains and how it is organized.]</p>
+      </div>
+      <dl class="facts">
+        <dt>Course</dt><dd>[Course name and number]</dd>
+        <dt>Institution</dt><dd>[University]</dd>
+        <dt>Term</dt><dd>[Semester Year]</dd>
+        <dt>Instructor</dt><dd>[Name]</dd>
+        <dt>Software</dt><dd>QGIS [version]</dd>
+        <dt>Contact</dt><dd><a href="mailto:you@example.com">you@example.com</a></dd>
+      </dl>
+    </div>
+  </section>
+
+  <!-- 2. THINKING SPATIALLY -->
+  <section id="thinking-spatially">
+    <div class="band">
+      <img src="images/thinking-spatially.jpg" alt="Describe the background map." onerror="this.remove()">
+      <div class="wrap">
+        <h2>Thinking spatially</h2>
+        <blockquote>
+          [Paste a definition of spatial or geographic thinking from a scholarly source.]
+          <cite>[Author, Year, page]</cite>
+        </blockquote>
+      </div>
+    </div>
+    <div class="block wrap">
+      <p>[Short background: what geographic thinking means and why it shapes how you approached the projects below.]</p>
+      <div class="tablewrap">
+        <table>
+          <thead><tr><th scope="col">Type of space</th><th scope="col">What it means</th><th scope="col">Examples</th></tr></thead>
+          <tbody>
+            <tr><th scope="row">Absolute space</th><td>Fixed, measurable space of coordinates, distances and boundaries that exists independently of what happens in it.</td><td>A parcel boundary; the distance between two towns; a GPS coordinate.</td></tr>
+            <tr><th scope="row">Relative space</th><td>Space defined by relationships between places, such as travel time or cost, which change with transport and technology.</td><td>Commute time to a city center; a transit map; shipping costs.</td></tr>
+            <tr><th scope="row">Relational space</th><td>Space produced by social processes, experiences and meanings; it cannot be separated from the people and events within it.</td><td>A neighborhood a community calls home; a place remembered after a disaster.</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </section>
+
+  <!-- 3. PROJECTS: copy one whole <article> to add a project; change its id, nav link and image names -->
+  <article class="project" id="project-1">
+    <div class="opener">
+    <header class="wrap p-head">
+      <h2>Project 1 title</h2>
+      <h3>Objective</h3>
+      <p class="lede">[What was the purpose of the activity? State the question or task and who the map is for.]</p>
+    </header>
+
+    <section class="stage" aria-label="Maps and results">
+      <div class="inner">
+        <h3>Maps and results</h3>
+        <figure data-ph="Add your map: images/project-1a.png">
+          <img src="images/project-1a.png" alt="Describe what the map shows in one sentence." onerror="this.parentNode.classList.add('missing');this.remove()">
+          <figcaption>Figure 1. [Caption: map title and area covered.] <a href="images/project-1a.png" target="_blank" rel="noopener">Open full resolution</a></figcaption>
+        </figure>
+        <!-- More maps: copy the <figure> above and rename the image (project-1b.png ...). For two maps side by side, wrap two <figure> blocks in <div class="pair"> ... </div> -->
+        <p>[Results: what the maps show and the main pattern or finding.]</p>
+      </div>
+    </section>
+    </div>
+
+    <section class="wrap dm">
+      <h3>Data and methods</h3>
+      <div class="cols">
+        <div>
+          <h4>Datasets</h4>
+          <ul><li>[Dataset name, source, year]</li><li>[Dataset name, source, year]</li></ul>
+          <h4>QGIS tools</h4>
+          <ul><li>[e.g. Reproject layer, Clip, Join attributes by location]</li><li>[Tool]</li></ul>
+        </div>
+        <div>
+          <h4>How I created the maps</h4>
+          <ol><li>[Prepare and reproject the data]</li><li>[Analysis step]</li><li>[Symbology and classification choices]</li><li>[Layout and export]</li></ol>
+        </div>
+      </div>
+    </section>
+
+    <div class="wrap cr">
+      <div class="cols">
+        <section>
+          <h3>Challenges</h3>
+          <h4>The difficulty</h4><p>[What went wrong or was hard?]</p>
+          <h4>How I addressed it</h4><p>[What you tried and what worked.]</p>
+        </section>
+        <section>
+          <h3>Reflection</h3>
+          <h4>What I learned</h4><p>[Skills or insights gained.]</p>
+          <h4>What I would improve</h4><p>[What you would change with more time.]</p>
+        </section>
+      </div>
+    </div>
+  </article>
+
+  <article class="project" id="project-2">
+    <div class="opener">
+    <header class="wrap p-head">
+      <h2>Project 2 title</h2>
+      <h3>Objective</h3>
+      <p class="lede">[Purpose of the activity.]</p>
+    </header>
+    <section class="stage" aria-label="Maps and results">
+      <div class="inner">
+        <h3>Maps and results</h3>
+        <figure data-ph="Add your map: images/project-2a.png">
+          <img src="images/project-2a.png" alt="Describe what the map shows in one sentence." onerror="this.parentNode.classList.add('missing');this.remove()">
+          <figcaption>Figure 2. [Caption.] <a href="images/project-2a.png" target="_blank" rel="noopener">Open full resolution</a></figcaption>
+        </figure>
+        <p>[Results.]</p>
+      </div>
+    </section>
+    </div>
+
+    <section class="wrap dm">
+      <h3>Data and methods</h3>
+      <div class="cols">
+        <div>
+          <h4>Datasets</h4><ul><li>[Dataset, source, year]</li></ul>
+          <h4>QGIS tools</h4><ul><li>[Tool]</li></ul>
+        </div>
+        <div>
+          <h4>How I created the maps</h4><ol><li>[Step]</li><li>[Step]</li></ol>
+        </div>
+      </div>
+    </section>
+    <div class="wrap cr">
+      <div class="cols">
+        <section><h3>Challenges</h3><h4>The difficulty</h4><p>[Problem.]</p><h4>How I addressed it</h4><p>[Solution.]</p></section>
+        <section><h3>Reflection</h3><h4>What I learned</h4><p>[Learning.]</p><h4>What I would improve</h4><p>[Improvement.]</p></section>
+      </div>
+    </div>
+  </article>
+
+  <article class="project" id="project-3">
+    <div class="opener">
+    <header class="wrap p-head">
+      <h2>Project 3 title</h2>
+      <h3>Objective</h3>
+      <p class="lede">[Purpose of the activity.]</p>
+    </header>
+    <section class="stage" aria-label="Maps and results">
+      <div class="inner">
+        <h3>Maps and results</h3>
+        <figure data-ph="Add your map: images/project-3a.png">
+          <img src="images/project-3a.png" alt="Describe what the map shows in one sentence." onerror="this.parentNode.classList.add('missing');this.remove()">
+          <figcaption>Figure 3. [Caption.] <a href="images/project-3a.png" target="_blank" rel="noopener">Open full resolution</a></figcaption>
+        </figure>
+        <p>[Results.]</p>
+      </div>
+    </section>
+    </div>
+
+    <section class="wrap dm">
+      <h3>Data and methods</h3>
+      <div class="cols">
+        <div>
+          <h4>Datasets</h4><ul><li>[Dataset, source, year]</li></ul>
+          <h4>QGIS tools</h4><ul><li>[Tool]</li></ul>
+        </div>
+        <div>
+          <h4>How I created the maps</h4><ol><li>[Step]</li><li>[Step]</li></ol>
+        </div>
+      </div>
+    </section>
+    <div class="wrap cr">
+      <div class="cols">
+        <section><h3>Challenges</h3><h4>The difficulty</h4><p>[Problem.]</p><h4>How I addressed it</h4><p>[Solution.]</p></section>
+        <section><h3>Reflection</h3><h4>What I learned</h4><p>[Learning.]</p><h4>What I would improve</h4><p>[Improvement.]</p></section>
+      </div>
+    </div>
+  </article>
+
+  <footer>
+    <div class="wrap">© 2026 Your Name. All maps and analysis are my own work for [Course name] unless noted under each project’s datasets.</div>
+  </footer>
+</main>
+
+<script>
+// Fades the hero title and darkens the hero map as the visitor scrolls past it.
+(function(){
+  var hero=document.querySelector('.hero'), text=hero.querySelector('.hero-text'), cue=hero.querySelector('.cue');
+  function update(){
+    var p=Math.min(window.scrollY/(window.innerHeight*0.6),1);
+    text.style.opacity=1-p; cue.style.opacity=1-p*1.6;
+    hero.style.setProperty('--dim',p);
+  }
+  window.addEventListener('scroll',update,{passive:true});
+  update();
+})();
+</script>
+</body>
+</html>
